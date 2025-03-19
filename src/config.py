@@ -12,5 +12,8 @@ class PSQLConfig(BaseSettings):
 
 
 class TSDBAPIConfig(BaseSettings):
+    """
+    Наш ZIIOT
+    """
     TSDB_HOST: str = Field(...)
     TSDB_PORT: str = Field(...)
