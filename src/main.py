@@ -1,7 +1,25 @@
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
 import uvicorn
 from fastapi import FastAPI, Query
 
-app = FastAPI()
+from containers.config_container import ConfigContainer
+from ml_task_api.routers import ml_router
+from pmm_task_api.routers import pmm_router
+
+
+@asynccontextmanager
+async def lifespan(_application: FastAPI) -> AsyncGenerator:
+    config_container = ConfigContainer()
+    config_container.wire(packages=[__name__, 'influx_api'])
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(ml_router, prefix='/ml')
+app.include_router(pmm_router, prefix='/pmm')
+
 
 @app.get("/healthcheck")
 async def healthcheck():
