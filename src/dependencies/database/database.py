@@ -15,6 +15,7 @@ class DatabaseSessionManager:
         self.session = None
         self._config = ConfigContainer.psql_config
 
+
     def init_db(self):
         if self.engine is not None:
             raise Exception('Database already initialized')
@@ -33,6 +34,7 @@ class DatabaseSessionManager:
             self.session_marker, scopefunc=current_task
         )
         loguru.logger.success('Database initialized')
+
 
     async def close(self):
         if self.engine is None:
