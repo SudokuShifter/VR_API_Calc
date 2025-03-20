@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Query
 
 
-pmm_router = APIRouter()
+adapt_router = APIRouter()
 
 
 ############################# Adapt-routers
 
 
-@pmm_router.get('api/v1/validate')
+@adapt_router.get('/api/v1/validate')
 async def get_task_validate_value(
         object_id: str = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
@@ -19,7 +19,7 @@ async def get_task_validate_value(
     pass
 
 
-@pmm_router.get('/api/v1/validate/get')
+@adapt_router.get('/api/v1/validate/get')
 async def get_validate_data(
         object_id: str = Query(..., description='Object ID'),
 ):
@@ -29,7 +29,7 @@ async def get_validate_data(
     pass
 
 
-@pmm_router.put('/api/v1/validate/set')
+@adapt_router.put('/api/v1/validate/set')
 async def put_validate_data(
         object_id: str = Query(..., description='Object ID'),
         is_user_value: bool = Query(..., description='Is user value'),
@@ -42,7 +42,7 @@ async def put_validate_data(
     pass
 
 
-@pmm_router.get('/api/v1/adaptation')
+@adapt_router.get('/api/v1/adaptation')
 async def get_adaptation_value(
         object_id: str = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
@@ -55,7 +55,7 @@ async def get_adaptation_value(
     pass
 
 
-@pmm_router.get('/api/v1/adaptation/all')
+@adapt_router.get('/api/v1/adaptation/all')
 async def get_all_adaptation_data(
         object_id: str = Query(..., description='Object ID'),
 ):
@@ -65,7 +65,7 @@ async def get_all_adaptation_data(
     pass
 
 
-@pmm_router.get('/api/v1/adaptation/active')
+@adapt_router.get('/api/v1/adaptation/active')
 async def get_active_adaptation_data(
         object_id: str = Query(..., description='Object ID'),
 ):
@@ -75,7 +75,7 @@ async def get_active_adaptation_data(
     pass
 
 
-@pmm_router.put('/api/v1/adaptation/set')
+@adapt_router.put('/api/v1/adaptation/set')
 async def set_active_adaptation_value(
         object_id: str = Query(..., description='Object ID'),
         name: str = Query(..., description='Имя адаптации')
@@ -89,7 +89,10 @@ async def set_active_adaptation_value(
 ############################# FMM-routers
 
 
-@pmm_router.get('/api/v1/fmm')
+fmm_router = APIRouter()
+
+
+@fmm_router.get('/api/v1/fmm')
 async def execute_fmm_task(
         object_id: str = Query(..., description='Object ID'),
         time: str = Query(..., description='Момент времени, для которого выполняется задача')
@@ -101,7 +104,7 @@ async def execute_fmm_task(
     pass
 
 
-@pmm_router.get('/api/v1/fmm/duration')
+@fmm_router.get('/api/v1/fmm/duration')
 async def execute_fmm_duration(
         object_id: str = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
@@ -113,7 +116,7 @@ async def execute_fmm_duration(
     pass
 
 
-@pmm_router.get('/api/v1/fmm/duration/parallel')
+@fmm_router.get('/api/v1/fmm/duration/parallel')
 async def execute_fmm_duration_parallel(
         object_id: str = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),

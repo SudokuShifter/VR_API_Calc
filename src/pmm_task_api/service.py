@@ -1,7 +1,7 @@
 
 from pydantic import BaseModel, Field
 
-from additional_services.storage_service import VRStorageService
+from dependencies import VRStorageService
 
 
 class VRValidationData(BaseModel):
@@ -27,7 +27,7 @@ class AdaptationAndValidationService:
             object_id: int,
             date_start: str,
             date_end: str
-    ) -> VRValidationDataResponse:
+    ):
 
         # Получаем объект по ID
         vr_zif_object = await self.vr_storage_service.get_object_by_uid(
@@ -51,9 +51,9 @@ class AdaptationAndValidationService:
         await self.vr_storage_service.save_validation_data(vr_validation_data)
 
         # Возвращаем результат валидации
-        return VRValidationDataResponse(
-            wct=validate_task_solution.solution.wct,
-            gas_condensate_factor=validate_task_solution.solution.gas_condensate_factor,
-            object_name=vr_zif_object.name
-        )
+        # return VRValidationDataResponse(
+        #     wct=validate_task_solution.solution.wct,
+        #     gas_condensate_factor=validate_task_solution.solution.gas_condensate_factor,
+        #     object_name=vr_zif_object.name
+        # )
 

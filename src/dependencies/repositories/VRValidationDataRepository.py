@@ -8,12 +8,8 @@ from dependencies.database.db_models import VRValidationData
 
 class VRValidationDataRepository:
 
-    def __init__(self, alchemy_model):
-        self.model = alchemy_model
-
-
+    @staticmethod
     async def save(
-            self,
             data: VRValidationData,
             session: AsyncSession = Depends(get_db)
     ) -> VRValidationData:
@@ -23,14 +19,14 @@ class VRValidationDataRepository:
         return data
 
 
+    @staticmethod
     async def find_by_uid(
-            self,
             object_id: int,
             session: AsyncSession = Depends(get_db)
     ) -> VRValidationData:
 
         result = await session.execute(
-            select(self.model).where(self.model.vr_zif_objects_id == object_id)
+            select(VRValidationData).where(VRValidationData.vr_zif_objects_id == object_id)
         )
         data = result.scalars().first()
         if not data:

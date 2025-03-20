@@ -11,12 +11,9 @@ from dependencies.database.db_models import VRZifObjects
 # Репозитории
 class VRZifObjectsRepository:
 
-    def __init__(self, alchemy_model):
-        self.model = alchemy_model
 
-
+    @staticmethod
     async def save(
-            self,
             obj: VRZifObjects,
             session: AsyncSession = Depends(get_db)
     ) -> VRZifObjects:
@@ -26,14 +23,14 @@ class VRZifObjectsRepository:
         return obj
 
 
+    @staticmethod
     async def find_by_uid(
-            self,
             zif_uid: str,
             session: AsyncSession = Depends(get_db)
     ) -> VRZifObjects:
 
         result = await session.execute(
-            select(self.model).where(self.model.zif_uid == zif_uid)
+            select(VRZifObjects).where(VRZifObjects.zif_uid == zif_uid)
         )
         obj = result.scalars().first()
         if not obj:
@@ -41,14 +38,14 @@ class VRZifObjectsRepository:
         return obj
 
 
+    @staticmethod
     async def find_by_id(
-            self,
             _id: int,
             session: AsyncSession = Depends(get_db)
     ) -> VRZifObjects:
 
         result = await session.execute(
-            select(self.model).where(self.model.id == _id)
+            select(VRZifObjects).where(VRZifObjects.id == _id)
         )
         obj = result.scalars().first()
         if not obj:
@@ -56,23 +53,23 @@ class VRZifObjectsRepository:
         return obj
 
 
+    @staticmethod
     async def find_all_active(
-            self,
             session: AsyncSession = Depends(get_db)
     ) -> Sequence[VRZifObjects]:
 
         result = await session.execute(
-            select(self.model).where(
-                self.model.active_adaptation_value_id.is_not(None)
+            select(VRZifObjects).where(
+                VRZifObjects.active_adaptation_value_id.is_not(None)
             )
         )
         return result.scalars().all()
 
 
+    @staticmethod
     async def find_all(
-            self,
             session: AsyncSession = Depends(get_db)
     ) -> Sequence[VRZifObjects]:
 
-        result = await session.execute(select(self.model))
+        result = await session.execute(select(VRZifObjects))
         return result.scalars().all()

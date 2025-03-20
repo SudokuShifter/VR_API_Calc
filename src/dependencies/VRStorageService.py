@@ -1,13 +1,13 @@
 from typing import Sequence
 
 from dependencies.repositories.VRZifObjectsRepository import VRZifObjectsRepository
-from dependensies.repositories.VRAdaptationDataRepository import VRAdaptationDataRepository
-from dependensies.repositories.VRValidationDataRepository import VRValidationDataRepository
-from dependensies.repositories.VRZifAdditionalObjectsRepository import VRZifAdditionalObjectsRepository
-from dependensies.repositories.VRTypeRepository import VRTypeRepository
+from dependencies.repositories.VRAdaptationDataRepository import VRAdaptationDataRepository
+from dependencies.repositories.VRValidationDataRepository import VRValidationDataRepository
+from dependencies.repositories.VRZifAdditionalObjectsRepository import VRZifAdditionalObjectsRepository
+from dependencies.repositories.VRTypeRepository import VRTypeRepository
 
 
-from dependensies.database.db_models import (
+from dependencies.database.db_models import (
     VRZifObjects,
     VRAdaptationData,
     VRZifAdditionalObjects,
@@ -18,14 +18,13 @@ from dependensies.database.db_models import (
 )
 
 
-
 class VRStorageService:
-    def __init__(self, vr_zif_obj, adapt, valid, addit, type):
-        self.zif_objects_repo = VRZifObjectsRepository(vr_zif_obj)
-        self.adaptation_repo = VRAdaptationDataRepository(adapt)
-        self.validation_repo = VRValidationDataRepository(valid)
-        self.additional_objects_repo = VRZifAdditionalObjectsRepository(addit)
-        self.type_repo = VRTypeRepository(type)
+    def __init__(self):
+        self.zif_objects_repo = VRZifObjectsRepository()
+        self.adaptation_repo = VRAdaptationDataRepository()
+        self.validation_repo = VRValidationDataRepository()
+        self.additional_objects_repo = VRZifAdditionalObjectsRepository()
+        self.type_repo = VRTypeRepository()
 
 
     async def save_adaptation_data(self, data: VRAdaptationData) -> VRAdaptationData:
@@ -52,7 +51,7 @@ class VRStorageService:
         return await self.zif_objects_repo.find_by_uid(zif_uid)
 
 
-    async def get_object_by_id(self, id: int) -> VRZifObjects:
+    async def get_object_by_id(self, _id: int) -> VRZifObjects:
         return await self.zif_objects_repo.find_by_id(id)
 
 
@@ -72,8 +71,8 @@ class VRStorageService:
         return await self.adaptation_repo.find_by_name_and_object_id(name, object_id)
 
 
-    async def find_validation_data_by_object_id(self, object_id: int) -> VRValidationData:
-        return await self.validation_repo.find_by_uid(object_id)
+    async def find_validation_data_by_object_id(self, object_uid: str) -> VRValidationData:
+        return await self.validation_repo.find_by_uid(object_uid)
 
 
     async def find_all_vr_types(self) -> Sequence[VRType]:

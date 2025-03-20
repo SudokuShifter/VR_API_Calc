@@ -10,27 +10,22 @@ from dependencies.database.db_models import VRType
 
 class VRTypeRepository:
 
-    def __init__(self, alchemy_model):
-        self.model = alchemy_model
-
-
+    @staticmethod
     async def find_all(
-            self,
             session: AsyncSession = Depends(get_db)
     ) -> Sequence[VRType]:
-        
-        result = await session.execute(select(self.model))
+
+        result = await session.execute(select(VRType))
         return result.scalars().all()
 
-
+    @staticmethod
     async def find_by_uid(
-            self,
             uid: str,
             session: AsyncSession = Depends(get_db)
     ) -> VRType:
 
         result = await session.execute(
-            select(self.model).where(self.model.id == uid)
+            select(VRType).where(VRType == uid)
         )
         obj = result.scalars().first()
         if not obj:
