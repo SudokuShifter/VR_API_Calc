@@ -8,7 +8,7 @@ from dependency_injector import (
 
 from pmm_task_api.config import PMMAPIConfig
 from ml_task_api.config import MLAPIConfig
-from .schemas import (
+from .config import (
     PSQLConfig,
     TSDBAPIConfig
 )

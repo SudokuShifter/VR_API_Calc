@@ -12,7 +12,7 @@ from pmm_task_api.routers import pmm_router
 @asynccontextmanager
 async def lifespan(_application: FastAPI) -> AsyncGenerator:
     config_container = ConfigContainer()
-    config_container.wire(packages=[__name__, 'influx_api'])
+    config_container.wire(packages=[__name__, 'pmm_task_api', 'ml_task_api', 'additional_services'])
     yield
 
 
