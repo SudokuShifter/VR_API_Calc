@@ -8,7 +8,6 @@ from dependencies.database.db_session import get_db
 from dependencies.database.db_models import VRAdaptationData, VRZifObjects
 
 
-
 class VRAdaptationDataRepository:
 
     @staticmethod

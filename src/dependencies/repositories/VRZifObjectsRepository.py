@@ -8,9 +8,7 @@ from dependencies.database.db_session import get_db
 from dependencies.database.db_models import VRZifObjects
 
 
-# Репозитории
 class VRZifObjectsRepository:
-
 
     @staticmethod
     async def save(
@@ -30,7 +28,9 @@ class VRZifObjectsRepository:
     ) -> VRZifObjects:
 
         result = await session.execute(
-            select(VRZifObjects).where(VRZifObjects.zif_uid == zif_uid)
+            select(VRZifObjects).where(
+                VRZifObjects.zif_uid == zif_uid
+            )
         )
         obj = result.scalars().first()
         if not obj:
@@ -45,7 +45,9 @@ class VRZifObjectsRepository:
     ) -> VRZifObjects:
 
         result = await session.execute(
-            select(VRZifObjects).where(VRZifObjects.id == _id)
+            select(VRZifObjects).where(
+                VRZifObjects.id == _id
+            )
         )
         obj = result.scalars().first()
         if not obj:

@@ -18,6 +18,7 @@ class VRTypeRepository:
         result = await session.execute(select(VRType))
         return result.scalars().all()
 
+
     @staticmethod
     async def find_by_uid(
             uid: str,
@@ -25,7 +26,9 @@ class VRTypeRepository:
     ) -> VRType:
 
         result = await session.execute(
-            select(VRType).where(VRType == uid)
+            select(VRType).where(
+                VRType == uid
+            )
         )
         obj = result.scalars().first()
         if not obj:

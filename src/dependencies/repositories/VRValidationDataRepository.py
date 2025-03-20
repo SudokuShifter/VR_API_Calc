@@ -26,7 +26,9 @@ class VRValidationDataRepository:
     ) -> VRValidationData:
 
         result = await session.execute(
-            select(VRValidationData).where(VRValidationData.vr_zif_objects_id == object_id)
+            select(VRValidationData).where(
+                VRValidationData.vr_zif_objects_id == object_id
+            )
         )
         data = result.scalars().first()
         if not data:
