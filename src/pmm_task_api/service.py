@@ -56,3 +56,4 @@ class AdaptationAndValidationService:
             gas_condensate_factor=validate_task_solution.solution.gas_condensate_factor,
             object_name=vr_zif_object.name
         )
+
