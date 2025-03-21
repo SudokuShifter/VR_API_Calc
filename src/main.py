@@ -7,6 +7,7 @@ from fastapi import FastAPI, Query
 from containers.config_container import ConfigContainer
 from ml_task_api.routers import ml_router
 from pmm_task_api.routers import adapt_router, fmm_router
+from dependencies import VRStorage
 
 
 @asynccontextmanager
@@ -28,11 +29,12 @@ async def healthcheck():
 
 
 @app.get("/api/v1/type-calculation/all")
-async def all_type_calculation():
+async def all_type_calculation(VRStorage: VRStorage):
     """
     Получает все типы расчетов, доступные в системе.
     """
-    pass
+    return VRStorage.get_all_main_objects()
+
 
 
 @app.get("/api/v1/type-calculation/")
@@ -42,7 +44,7 @@ async def type_calculation(
     """
     Получает тип расчета по идентификатору объекта (object_uid).
     """
-    pass
+    return VRStorage.get_object_by_uid(object_uid)
 
 
 @app.put('/api/v1/type-calculation/set/')
@@ -53,7 +55,8 @@ async def type_calculation_set(
     """
     Устанавливает активный тип расчета для объекта по его идентификатору
     """
-    pass
+    obj = VRStorage.get_object_by_uid(object_uid)
+    return VRStorage.set_type_calculation(obj, type_value)
 
 
 

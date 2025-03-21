@@ -1,13 +1,13 @@
 from typing import Sequence
 
-from dependencies.repositories.VRZifObjectsRepository import VRZifObjectsRepository
-from dependencies.repositories.VRAdaptationDataRepository import VRAdaptationDataRepository
-from dependencies.repositories.VRValidationDataRepository import VRValidationDataRepository
-from dependencies.repositories.VRZifAdditionalObjectsRepository import VRZifAdditionalObjectsRepository
-from dependencies.repositories.VRTypeRepository import VRTypeRepository
+from src.dependencies import VRZifObjectsRepository
+from src.dependencies import VRAdaptationDataRepository
+from src.dependencies import VRValidationDataRepository
+from src.dependencies import VRZifAdditionalObjectsRepository
+from src.dependencies import VRTypeRepository
 
 
-from dependencies.database.db_models import (
+from src.dependencies import (
     VRZifObjects,
     VRAdaptationData,
     VRZifAdditionalObjects,

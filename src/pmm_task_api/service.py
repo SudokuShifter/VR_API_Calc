@@ -1,7 +1,7 @@
 
 from pydantic import BaseModel, Field
 
-from dependencies import VRStorageService
+from src.dependencies import VRStorageService
 
 
 class VRValidationData(BaseModel):
