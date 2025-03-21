@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Query
 
+from services.dependencies import AdaptValidateService
+
 
 adapt_router = APIRouter()
 
@@ -9,6 +11,7 @@ adapt_router = APIRouter()
 
 @adapt_router.get('/api/v1/validate')
 async def get_task_validate_value(
+        adapt_validate_service: AdaptValidateService,
         object_id: str = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
         time_right: str = Query(..., description='Time right'),
@@ -16,21 +19,27 @@ async def get_task_validate_value(
     """
     Выполняет расчет данных для валидации на основе переданных параметров.
     """
-    pass
+    return await adapt_validate_service.execute_task_validation(
+        object_id=object_id, time_left=time_left, time_right=time_right
+    )
 
 
 @adapt_router.get('/api/v1/validate/get')
 async def get_validate_data(
+        adapt_validate_service: AdaptValidateService,
         object_id: str = Query(..., description='Object ID'),
 ):
     """
     Получает данные валидации из базы данных по идентификатору объекта.
     """
-    pass
+    return await adapt_validate_service.get_validate_data(
+        object_id=object_id
+    )
 
 
 @adapt_router.put('/api/v1/validate/set')
 async def put_validate_data(
+        adapt_validate_service: AdaptValidateService,
         object_id: str = Query(..., description='Object ID'),
         is_user_value: bool = Query(..., description='Is user value'),
         wct: float = Query(..., description='Значение обводненности'),
@@ -39,7 +48,10 @@ async def put_validate_data(
     """
     Устанавливает данные валидации для объекта.
     """
-    pass
+    return await adapt_validate_service.set_validation_data(
+        object_id=object_id, is_user_value=is_user_value,
+        wct=wct, gas_condensate_factor=gas_condensate_factor
+    )
 
 
 @adapt_router.get('/api/v1/adaptation')
@@ -57,33 +69,42 @@ async def get_adaptation_value(
 
 @adapt_router.get('/api/v1/adaptation/all')
 async def get_all_adaptation_data(
+        adapt_validate_service: AdaptValidateService,
         object_id: str = Query(..., description='Object ID'),
 ):
     """
     Получает все данные адаптации для объекта по его идентификатору.
     """
-    pass
+    return await adapt_validate_service.get_all_adaptation_data(
+        object_id=object_id
+    )
 
 
 @adapt_router.get('/api/v1/adaptation/active')
 async def get_active_adaptation_data(
+        adapt_validate_service: AdaptValidateService,
         object_id: str = Query(..., description='Object ID'),
 ):
     """
     Получает активные данные адаптации для объекта по его идентификатору.
     """
-    pass
+    return await adapt_validate_service.get_active_adaptation_data(
+        object_id=object_id
+    )
 
 
 @adapt_router.put('/api/v1/adaptation/set')
 async def set_active_adaptation_value(
+        adapt_validate_service: AdaptValidateService,
         object_id: str = Query(..., description='Object ID'),
         name: str = Query(..., description='Имя адаптации')
 ):
     """
     Устанавливает активные данные адаптации для объекта по имени адаптации.
     """
-    pass
+    return await adapt_validate_service.set_active_adaptation_value(
+        object_id=object_id, name=name
+    )
 
 
 ############################# FMM-routers

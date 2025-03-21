@@ -7,7 +7,7 @@ from fastapi import FastAPI, Query
 from containers.config_container import ConfigContainer
 from ml_task_api.routers import ml_router
 from pmm_task_api.routers import adapt_router, fmm_router
-from dependencies.VRStorageService import VRStorage
+from services.dependencies import VRStorage
 
 
 @asynccontextmanager

@@ -41,3 +41,5 @@ class ConfigContainer(containers.DeclarativeContainer):
         TSDB_HOST=os.getenv('TSDB_HOST'),
         TSDB_PORT=os.getenv('TSDB_PORT')
     )
+
+

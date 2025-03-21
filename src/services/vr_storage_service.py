@@ -53,7 +53,7 @@ class VRStorageService:
 
 
     async def get_object_by_id(self, _id: int) -> VRZifObjects:
-        return await self.zif_objects_repo.find_by_id(id)
+        return await self.zif_objects_repo.find_by_id(_id)
 
 
     async def get_additional_object_by_name_and_main_object(self, object_uid: str, object_name: str) -> VRZifAdditionalObjects:
@@ -72,8 +72,8 @@ class VRStorageService:
         return await self.adaptation_repo.find_by_name_and_object_id(name, object_id)
 
 
-    async def find_validation_data_by_object_id(self, object_uid: str) -> VRValidationData:
-        return await self.validation_repo.find_by_uid(object_uid)
+    async def find_validation_data_by_object_id(self, object_id: str) -> VRValidationData:
+        return await self.validation_repo.find_by_uid(object_id)
 
 
     async def find_all_vr_types(self) -> Sequence[VRType]:
@@ -85,8 +85,4 @@ class VRStorageService:
 
 
 
-async def get_vr_storage_service() -> VRStorageService:
-    return VRStorageService()
 
-
-VRStorage = Annotated[VRStorageService, Depends(get_vr_storage_service)]
