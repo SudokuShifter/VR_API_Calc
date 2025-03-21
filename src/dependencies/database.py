@@ -1,8 +1,14 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncEngine, async_scoped_session
+from sqlalchemy.ext.asyncio import (
+    async_sessionmaker,
+    create_async_engine,
+    AsyncEngine,
+    async_scoped_session
+)
 from asyncio import current_task
 import loguru
 
 from containers.config_container import ConfigContainer
+from config import PSQLConfig, load_psql_config
 
 
 class DatabaseSessionManager:
@@ -13,7 +19,7 @@ class DatabaseSessionManager:
         self.engine: AsyncEngine | None = None
         self.session_marker = None
         self.session = None
-        self._config = ConfigContainer.psql_config
+        self._config = load_psql_config()
 
 
     def init_db(self):

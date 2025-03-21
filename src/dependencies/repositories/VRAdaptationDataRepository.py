@@ -4,8 +4,8 @@ from fastapi import HTTPException, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dependencies.database.db_session import get_db
-from dependencies.database.db_models import VRAdaptationData, VRZifObjects
+from dependencies.db_session import get_db
+from dependencies.db_models import VRAdaptationData, VRZifObjects
 
 
 class VRAdaptationDataRepository:

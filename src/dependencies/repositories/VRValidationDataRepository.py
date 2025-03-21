@@ -1,31 +1,32 @@
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dependencies.database.db_session import get_db
-from dependencies.database.db_models import VRValidationData
+from dependencies.db_session import get_db
+from dependencies.db_models import VRValidationData
 
 
 class VRValidationDataRepository:
 
-    @staticmethod
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
     async def save(
+            self,
             data: VRValidationData,
-            session: AsyncSession = Depends(get_db)
     ) -> VRValidationData:
 
-        session.add(data)
-        await session.commit()
+        self.session.add(data)
+        await self.session.commit()
         return data
 
 
-    @staticmethod
     async def find_by_uid(
-            object_id: int,
-            session: AsyncSession = Depends(get_db)
+            self,
+            object_id: int
     ) -> VRValidationData:
-
-        result = await session.execute(
+        print(self.session)
+        result = await self.session.execute(
             select(VRValidationData).where(
                 VRValidationData.vr_zif_objects_id == object_id
             )

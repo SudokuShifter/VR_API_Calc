@@ -4,30 +4,31 @@ from fastapi import HTTPException, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dependencies.database.db_session import get_db
-from dependencies.database.db_models import VRZifObjects
+from dependencies.db_session import get_db
+from dependencies.db_models import VRZifObjects
 
 
 class VRZifObjectsRepository:
 
-    @staticmethod
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
     async def save(
-            obj: VRZifObjects,
-            session: AsyncSession = Depends(get_db)
+            self,
+            obj: VRZifObjects
     ) -> VRZifObjects:
 
-        session.add(obj)
-        await session.commit()
+        self.session.add(obj)
+        await self.session.commit()
         return obj
 
 
-    @staticmethod
     async def find_by_uid(
-            zif_uid: str,
-            session: AsyncSession = Depends(get_db)
+            self,
+            zif_uid: str
     ) -> VRZifObjects:
 
-        result = await session.execute(
+        result = await self.session.execute(
             select(VRZifObjects).where(
                 VRZifObjects.zif_uid == zif_uid
             )

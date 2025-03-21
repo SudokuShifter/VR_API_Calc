@@ -1,7 +1,9 @@
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dependencies.database.database import session_manager
+from containers.config_container import ConfigContainer
+from dependencies.database import session_manager
+
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

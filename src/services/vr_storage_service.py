@@ -1,13 +1,13 @@
 from typing import Sequence, Annotated
 
-from dependencies.repositories import VRZifObjectsRepository
-from dependencies.repositories import VRAdaptationDataRepository
-from dependencies.repositories import VRValidationDataRepository
-from dependencies.repositories import VRZifAdditionalObjectsRepository
-from dependencies.repositories import VRTypeRepository
+from dependencies.repositories.VRZifObjectsRepository import VRZifObjectsRepository
+from dependencies.repositories.VRAdaptationDataRepository import VRAdaptationDataRepository
+from dependencies.repositories.VRValidationDataRepository import VRValidationDataRepository
+from dependencies.repositories.VRZifAdditionalObjectsRepository import VRZifAdditionalObjectsRepository
+from dependencies.repositories.VRTypeRepository import VRTypeRepository
 
-
-from dependencies.database.db_models import (
+from dependencies.db_session import get_db
+from dependencies.db_models import (
     VRZifObjects,
     VRAdaptationData,
     VRZifAdditionalObjects,
@@ -16,14 +16,14 @@ from dependencies.database.db_models import (
     VRType,
     VRSchedulerStatus
 )
-from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class VRStorageService:
-    def __init__(self):
-        self.zif_objects_repo = VRZifObjectsRepository()
+    def __init__(self, session: AsyncSession):
+        self.zif_objects_repo = VRZifObjectsRepository(session)
         self.adaptation_repo = VRAdaptationDataRepository()
-        self.validation_repo = VRValidationDataRepository()
+        self.validation_repo = VRValidationDataRepository(session)
         self.additional_objects_repo = VRZifAdditionalObjectsRepository()
         self.type_repo = VRTypeRepository()
 

@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Query
+from fastapi import (
+    APIRouter,
+    Query
+)
 
 ml_router = APIRouter()
 

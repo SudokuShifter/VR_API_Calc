@@ -1,11 +1,4 @@
 import datetime
-from importlib.metadata import always_iterable
-from typing import Annotated
-
-from fastapi import Depends
-from pydantic import BaseModel, Field
-
-from services.vr_storage_service import VRStorageService
 
 
 class VRFmmWebApiService:
@@ -17,8 +10,8 @@ class VRFmmWebApiService:
 
 class AdaptationAndValidationService:
 
-    def __init__(self):
-        self.vr_storage_service = VRStorageService()
+    def __init__(self, vr_storage):
+        self.vr_storage_service = vr_storage
         self.vr_fmm_web_api_service = VRFmmWebApiService()
 
     async def execute_task_validation(
@@ -142,10 +135,3 @@ class AdaptationAndValidationService:
         if obj and vr_adapt_data:
             obj.active_adaptation_value_id = vr_adapt_data.id
         await self.vr_storage_service.save_main_object(obj)
-
-
-
-
-
-
-

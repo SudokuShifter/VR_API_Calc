@@ -6,12 +6,12 @@ from dependency_injector import (
     containers
 )
 
-from pmm_task_api.config import PMMAPIConfig
-from ml_task_api.config import MLAPIConfig
 from config import (
-    PSQLConfig,
-    TSDBAPIConfig
+    TSDBAPIConfig,
+    MLAPIConfig,
+    PMMAPIConfig
 )
+
 
 load_dotenv()
 
@@ -27,19 +27,8 @@ class ConfigContainer(containers.DeclarativeContainer):
         ML_HOST=os.getenv('ML_HOST'),
         ML_PORT=os.getenv('ML_PORT')
     )
-    psql_config = providers.Factory(
-        PSQLConfig,
-        PSQL_HOST=os.getenv('PSQL_HOST'),
-        PSQL_PORT=os.getenv('PSQL_PORT'),
-        PSQL_USER=os.getenv('PSQL_USER'),
-        PSQL_PASS=os.getenv('PSQL_PASS'),
-        PSQL_DB=os.getenv('PSQL_DB'),
-        PSQL_SCHEMA=os.getenv('PSQL_SCHEMA')
-    )
     tsdb_config = providers.Factory(
         TSDBAPIConfig,
         TSDB_HOST=os.getenv('TSDB_HOST'),
         TSDB_PORT=os.getenv('TSDB_PORT')
     )
-
-
