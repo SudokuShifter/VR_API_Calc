@@ -1,13 +1,13 @@
-from typing import Sequence
+from typing import Sequence, Annotated
 
-from src.dependencies import VRZifObjectsRepository
-from src.dependencies import VRAdaptationDataRepository
-from src.dependencies import VRValidationDataRepository
-from src.dependencies import VRZifAdditionalObjectsRepository
-from src.dependencies import VRTypeRepository
+from dependencies.repositories import VRZifObjectsRepository
+from dependencies.repositories import VRAdaptationDataRepository
+from dependencies.repositories import VRValidationDataRepository
+from dependencies.repositories import VRZifAdditionalObjectsRepository
+from dependencies.repositories import VRTypeRepository
 
 
-from src.dependencies import (
+from dependencies.database.db_models import (
     VRZifObjects,
     VRAdaptationData,
     VRZifAdditionalObjects,
@@ -16,6 +16,7 @@ from src.dependencies import (
     VRType,
     VRSchedulerStatus
 )
+from fastapi import Depends
 
 
 class VRStorageService:
@@ -81,3 +82,11 @@ class VRStorageService:
 
     async def find_vr_type_by_uid(self, uid: str) -> VRType:
         return await self.type_repo.find_by_uid(uid)
+
+
+
+async def get_vr_storage_service() -> VRStorageService:
+    return VRStorageService()
+
+
+VRStorage = Annotated[VRStorageService, Depends(get_vr_storage_service)]

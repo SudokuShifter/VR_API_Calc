@@ -1,7 +1,6 @@
-
 from pydantic import BaseModel, Field
 
-from src.dependencies import VRStorageService
+from dependencies.VRStorageService import VRStorage
 
 
 class VRValidationData(BaseModel):
@@ -18,7 +17,7 @@ class VRFmmWebApiService:
 
 class AdaptationAndValidationService:
     def __init__(self):
-        self.vr_storage_service = VRStorageService()
+        self.vr_storage_service = VRStorage()
         self.vr_fmm_web_api_service = VRFmmWebApiService()
 
 
