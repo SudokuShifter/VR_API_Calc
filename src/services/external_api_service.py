@@ -52,7 +52,8 @@ class PMMAPIService(BaseHTTPService):
             self,
             object_id: int,
             date_left: str,
-            date_right: str
+            date_right: str,
+            name: str
     ):
         vr_zid_object = await self.vr_storage_service.get_object_by_id(
             _id=object_id
@@ -130,6 +131,23 @@ class PMMAPIService(BaseHTTPService):
         # )
 
 
+    async def execute_fmm_task(
+            self,
+            object_id: int,
+            time_left: str,
+            time_right: str,
+    ):
+        vr_zif_object = await self.vr_storage_service.get_object_by_id(
+            _id=object_id
+        )
+        if time_left:
+            data = VRAPICore.get_data(vr_zif_object.name, time_left=time_left, time_right=time_right)
+        else:
+            data = VRAPICore.get_data(vr_zif_object.name, time_left=time_right)
+        fmm_data = self.execute_request(url=f'{self.url}/{PMMAPIService.URLS["fmm"]}', body=data)
+        return fmm_data
+
+
     async def get_validate_data(
             self,
             object_id: int
@@ -190,14 +208,6 @@ class PMMAPIService(BaseHTTPService):
         await self.vr_storage_service.save_main_object(obj)
 
 
-    async def execute_fmm_task(
-            self,
-            object_id: int,
-            time: datetime,
-            name_obj: str
-    ):
-        pass
-
 
 class MLAPIService(BaseHTTPService):
     URLS = {
@@ -211,16 +221,20 @@ class MLAPIService(BaseHTTPService):
     async def execute_ml_task(self, object_id: int, time_left: str, time_right: Optional[str]):
         obj = self.vr_storage_service.get_object_by_id(_id=object_id)
         if time_right:
-            data = await VRAPICore.get_data(obj.name, time_left, time_right)
+            data = await VRAPICore.get_data(obj.name, time_left=time_left, time_right=time_right)
         else:
-            data = await VRAPICore.get_data(obj.name, time=time_right)
-        task = await self.execute_request(url=f'{self.url}/{MLAPIService.URLS["ml_predict"]}')
+            data = await VRAPICore.get_data(obj.name, time_left=time_right)
+        return await self.execute_request(url=f'{self.url}/{MLAPIService.URLS["ml_predict"]}', method='POST', body=data)
 
 
 
 class VRAPICore:
     URLS = {
-
+        'ml_predict': 'predict',
+        'adapt': 'adapt',
+        'validate': 'validate'
     }
     def __init__(self, config):
         self.url = f'http://{config.TSDB_HOST}:{config.TSDB_PORT}/'
+
+

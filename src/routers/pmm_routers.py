@@ -3,7 +3,8 @@ from fastapi import (
     Query
 )
 
-from services.dependencies import AdaptValidateService
+from services.dependencies import PMMAPIService
+
 
 
 adapt_router = APIRouter()
@@ -14,7 +15,7 @@ adapt_router = APIRouter()
 
 @adapt_router.get('/api/v1/validate')
 async def get_task_validate_value(
-        adapt_validate_service: AdaptValidateService,
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
         time_right: str = Query(..., description='Time right'),
@@ -29,7 +30,7 @@ async def get_task_validate_value(
 
 @adapt_router.get('/api/v1/validate/get')
 async def get_validate_data(
-        adapt_validate_service: AdaptValidateService,
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
 ):
     """
@@ -42,7 +43,7 @@ async def get_validate_data(
 
 @adapt_router.put('/api/v1/validate/set')
 async def put_validate_data(
-        adapt_validate_service: AdaptValidateService,
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
         is_user_value: bool = Query(..., description='Is user value'),
         wct: float = Query(..., description='Значение обводненности'),
@@ -59,20 +60,26 @@ async def put_validate_data(
 
 @adapt_router.get('/api/v1/adaptation')
 async def get_adaptation_value(
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
         time_right: str = Query(..., description='Time right'),
         name: str = Query(..., description='Имя адаптации')
 ):
     """
-    Выполняет расчет коэффициентов адаптации без их активации.
+    Считает данные адаптации без их активации
     """
-    pass
+    return await adapt_validate_service.execute_task_adaptation(
+        object_id=object_id,
+        time_left=time_left,
+        time_right=time_right,
+        name=name
+    )
 
 
 @adapt_router.get('/api/v1/adaptation/all')
 async def get_all_adaptation_data(
-        adapt_validate_service: AdaptValidateService,
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
 ):
     """
@@ -85,7 +92,7 @@ async def get_all_adaptation_data(
 
 @adapt_router.get('/api/v1/adaptation/active')
 async def get_active_adaptation_data(
-        adapt_validate_service: AdaptValidateService,
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
 ):
     """
@@ -98,7 +105,7 @@ async def get_active_adaptation_data(
 
 @adapt_router.put('/api/v1/adaptation/set')
 async def set_active_adaptation_value(
-        adapt_validate_service: AdaptValidateService,
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
         name: str = Query(..., description='Имя адаптации')
 ):
@@ -118,6 +125,7 @@ fmm_router = APIRouter()
 
 @fmm_router.get('/api/v1/fmm')
 async def execute_fmm_task(
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
         time: str = Query(..., description='Момент времени, для которого выполняется задача')
 ):
@@ -125,11 +133,14 @@ async def execute_fmm_task(
     Выполняет задачу FMM
     для указанного объекта в определенный момент времени.
     """
-    pass
+    return adapt_validate_service.execute_fmm_task(
+        object_id=object_id, time=time
+    )
 
 
 @fmm_router.get('/api/v1/fmm/duration')
 async def execute_fmm_duration(
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
         time_right: str = Query(..., description='Time right')
@@ -137,11 +148,14 @@ async def execute_fmm_duration(
     """
     Выполняет задачу FMM для указанного объекта в течение заданного временного интервала
     """
-    pass
+    return adapt_validate_service.execute_fmm_task(
+        object_id=object_id, time_left=time_left, time_right=time_right
+    )
 
 
 @fmm_router.get('/api/v1/fmm/duration/parallel')
 async def execute_fmm_duration_parallel(
+        adapt_validate_service: PMMAPIService,
         object_id: int = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
         time_right: str = Query(..., description='Time right')
