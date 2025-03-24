@@ -1,26 +1,28 @@
 from fastapi import (
     APIRouter,
-    Query
+    Query, Depends
 )
 
-from services.dependencies import MLAPIService
+from services.dependencies import MLServiceDep
 
 ml_router = APIRouter()
 
 
 @ml_router.get("/api/v1/ml")
 async def execute_ml_task(
-        object_id: str = Query(..., description='Object ID'),
+        ml_service: MLServiceDep,
+        object_id: int = Query(..., description='Object ID'),
         time: str = Query(..., description='Момент времени, для которого выполняется задача')
 ):
     """
     Запускает ml-task за метку времени
     """
-    return await MLAPIService.execute_ml_task(object_id, time)
+    pass
 
 
 @ml_router.get("/api/v1/ml/duration")
 async def execute_ml_duration_task(
+        ml_service: MLServiceDep,
         object_id: int = Query(..., description='Object ID'),
         time_left: str = Query(..., description='Time left'),
         time_right: str = Query(..., description='Time right')
@@ -28,4 +30,4 @@ async def execute_ml_duration_task(
     """
     Запускает ml-task за диапазон времени
     """
-    return await MLAPIService.execute_ml_task(object_id, time_left, time_right)
+    pass

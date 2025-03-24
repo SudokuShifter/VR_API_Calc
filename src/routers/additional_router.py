@@ -3,14 +3,14 @@ from fastapi import (
     Query
 )
 
-from services.dependencies import VRStorage
+from services.dependencies import VRStorageDep
 
 
 additional_router = APIRouter()
 
 
 @additional_router.get("/api/v1/type-calculation/all")
-async def all_type_calculation(vr_storage: VRStorage):
+async def all_type_calculation(vr_storage: VRStorageDep):
     """
     Получает все типы расчетов, доступные в системе.
     """
@@ -19,7 +19,7 @@ async def all_type_calculation(vr_storage: VRStorage):
 
 @additional_router.get("/api/v1/type-calculation/")
 async def type_calculation(
-        vr_storage: VRStorage,
+        vr_storage: VRStorageDep,
         object_uid: str = Query(..., description='Идентификатор объекта')
 ):
     """
@@ -30,7 +30,7 @@ async def type_calculation(
 
 @additional_router.put('/api/v1/type-calculation/set/')
 async def type_calculation_set(
-        vr_storage: VRStorage,
+        vr_storage: VRStorageDep,
         object_uid: str = Query(..., description='Идентификатор объекта'),
         type_value: str = Query(..., description='Значение типа расчета')
 ):
