@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from dependencies.db_session import get_db
 from containers.config_container import ConfigContainer
 from config import TSDBAPIConfig
-from services.pmm_service import AdaptationAndValidationService
 from services.vr_storage_service import VRStorageService
 from services.external_api_service import (
     PMMAPIService,
@@ -19,10 +18,6 @@ from services.external_api_service import (
 
 async def get_vr_storage_service(session: AsyncSession=Depends(get_db)) -> VRStorageService:
     return VRStorageService(session)
-
-
-async def get_adapt_validate_service(vr_storage: VRStorageService=Depends(get_vr_storage_service)):
-    return AdaptationAndValidationService(vr_storage)
 
 
 async def get_pmm_service(config: ConfigContainer = Provide[ConfigContainer.pmm_config]) -> PMMAPIService:
@@ -39,7 +34,6 @@ async def get_vr_service(config: TSDBAPIConfig = Provide[ConfigContainer.tsdb_co
 
 
 VRStorage = Annotated[VRStorageService, Depends(get_vr_storage_service)]
-AdaptValidateService = Annotated[AdaptationAndValidationService, Depends(get_adapt_validate_service)]
 PMMAPIService = Annotated[PMMAPIService, Depends(get_pmm_service)]
 MLAPIService = Annotated[MLAPIService, Depends(get_ml_service)]
 VRAPICore = Annotated[VRAPICore, Depends(get_vr_service)]
