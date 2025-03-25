@@ -18,4 +18,4 @@ class VRAdaptationDataCreate(VRAdaptationDataBase):
 
 class VRAdaptationDataPyd(VRAdaptationDataBase):
     class Config:
-        orm_mode = True
+        from_attributes = True

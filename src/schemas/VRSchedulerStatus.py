@@ -11,4 +11,4 @@ class VRSchedulerStatusCreate(VRSchedulerStatusBase):
 
 class VRSchedulerStatusPyd(VRSchedulerStatusBase):
     class Config:
-        orm_mode = True
+        from_attributes = True

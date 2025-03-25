@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,12 +15,18 @@ class VRValidationDataRepository:
 
     async def save(
             self,
-            data: VRValidationData,
+            object_id, is_user_value,
+            wct, gas_condensate_factor,
     ) -> VRValidationData:
 
-        self.session.add(data)
+        obj = VRValidationData(vr_zif_objects_id = object_id,
+                               wct = wct,
+                               gas_condensate_factor = gas_condensate_factor,
+                               is_user_value = is_user_value,
+                               date = datetime.now())
+        self.session.add(obj)
         await self.session.commit()
-        return data
+        return obj
 
 
     async def find_by_uid(
@@ -35,3 +43,15 @@ class VRValidationDataRepository:
         if not data:
             raise HTTPException(status_code=404, detail="VR ZIF Object not found")
         return data
+
+
+    async def set_validation_data(
+            self,
+            object_id: int,
+            is_user_value: bool,
+            wct: float,
+            gas_condensate_factor: float
+    ):
+        self.save(object_id=object_id, is_user_value=is_user_value,
+            wct=wct, gas_condensate_factor=gas_condensate_factor)
+        return {'success': True, 'detail': object_id}

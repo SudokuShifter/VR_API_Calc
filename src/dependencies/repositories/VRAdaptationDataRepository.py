@@ -6,31 +6,33 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies.db_session import get_db
 from dependencies.db_models import VRAdaptationData, VRZifObjects
+from schemas.VRAdaptationData import VRAdaptationDataPyd
 
 
 class VRAdaptationDataRepository:
 
-    @staticmethod
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
     async def save(
-            data: VRAdaptationData,
-            session: AsyncSession = Depends(get_db)
-    ) -> VRAdaptationData:
+            self,
+            data: VRAdaptationDataPyd,
+    ):
 
-        session.add(data)
-        await session.commit()
-        return data
+        self.session.add(data)
+        await self.session.commit()
+        return VRAdaptationDataPyd(**data)
 
 
-    @staticmethod
     async def find_by_name_and_object_id(
+            self,
             name: str,
             object_id: int,
-            session: AsyncSession = Depends(get_db)
     ) -> VRAdaptationData:
 
-        result = await session.execute(
+        result = await self.session.execute(
             select(VRAdaptationData).where(
-                VRAdaptationData == name,
+                VRAdaptationData.name == name,
                 VRAdaptationData.vr_zif_objects_id == object_id
             )
         )
@@ -40,13 +42,12 @@ class VRAdaptationDataRepository:
         return data
 
 
-    @staticmethod
     async def find_all_by_object_id(
+            self,
             object_id: int,
-            session: AsyncSession = Depends(get_db)
     ) -> Sequence[VRAdaptationData]:
 
-        result = await session.execute(
+        result = await self.session.execute(
             select(VRAdaptationData).where(
                 VRAdaptationData.vr_zif_objects_id == object_id
             )
@@ -54,13 +55,12 @@ class VRAdaptationDataRepository:
         return result.scalars().all()
 
 
-    @staticmethod
     async def find_active_by_object_id(
+            self,
             object_uid: str,
-            session: AsyncSession = Depends(get_db)
     ) -> VRAdaptationData:
 
-        result = await session.execute(
+        result = await self.session.execute(
             select(VRAdaptationData)
             .join(VRZifObjects, VRAdaptationData.vr_zif_objects_id == VRZifObjects.id)
             .where(

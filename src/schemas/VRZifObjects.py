@@ -18,4 +18,4 @@ class VRZifObjectsCreate(VRZifObjectsBase):
 
 class VRZifObjectsPyd(VRZifObjectsBase):
     class Config:
-        orm_mode = True
+        from_attributes = True

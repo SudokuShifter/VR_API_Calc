@@ -10,22 +10,24 @@ from dependencies.db_models import VRType, VRZifObjects
 
 class VRTypeRepository:
 
-    @staticmethod
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+
     async def find_all(
-            session: AsyncSession = Depends(get_db)
+            self,
     ) -> Sequence[VRType]:
 
-        result = await session.execute(select(VRType))
+        result = await self.session.execute(select(VRType))
         return result.scalars().all()
 
 
-    @staticmethod
     async def find_by_uid(
+            self,
             uid: str,
-            session: AsyncSession = Depends(get_db)
     ) -> VRType:
 
-        result = await session.execute(
+        result = await self.session.execute(
             select(VRType).where(
                 VRType == uid
             )
@@ -36,19 +38,18 @@ class VRTypeRepository:
         return obj
 
 
-    @staticmethod
     async def set_type_calculation(
+            self,
             obj: VRZifObjects,
-            type_value: str,
-            session: AsyncSession = Depends(get_db)
+            type_value: str
     ):
         stmt = select(VRType).where(VRType.id == type_value)
-        result = await session.execute(stmt)
+        result = await self.session.execute(stmt)
         vr_type = result.scalars().first()
 
         if not vr_type:
             raise HTTPException(status_code=404, detail="Object not found")
         obj.type = vr_type
-        session.add(obj)
-        await session.commit()
+        self.session.add(obj)
+        await self.session.commit()
         return type_value

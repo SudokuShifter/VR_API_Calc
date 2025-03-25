@@ -16,4 +16,4 @@ class VRValidationDataCreate(VRValidationDataBase):
 
 class VRValidationDataPyd(VRValidationDataBase):
     class Config:
-        orm_mode = True
+        from_attributes = True

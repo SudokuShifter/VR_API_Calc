@@ -14,4 +14,4 @@ class VRZifAdditionalObjectsCreate(VRZifAdditionalObjectsBase):
 
 class VRZifAdditionalObjectsPyd(VRZifAdditionalObjectsBase):
     class Config:
-        orm_mode = True
+        from_attributes = True

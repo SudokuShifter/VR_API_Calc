@@ -22,14 +22,27 @@ from sqlalchemy.ext.asyncio import AsyncSession
 class VRStorageService:
     def __init__(self, session: AsyncSession):
         self.zif_objects_repo = VRZifObjectsRepository(session)
-        self.adaptation_repo = VRAdaptationDataRepository()
+        self.adaptation_repo = VRAdaptationDataRepository(session)
         self.validation_repo = VRValidationDataRepository(session)
-        self.additional_objects_repo = VRZifAdditionalObjectsRepository()
-        self.type_repo = VRTypeRepository()
+        self.additional_objects_repo = VRZifAdditionalObjectsRepository(session)
+        self.type_repo = VRTypeRepository(session)
 
 
     async def save_adaptation_data(self, data: VRAdaptationData) -> VRAdaptationData:
         return await self.adaptation_repo.save(data)
+
+
+    async def set_adaptation_data(self, object_id: int, name: str) -> VRAdaptationData:
+        obj = self.get_object_by_id(_id=object_id)
+        data = self.find_adaptation_data_by_name_and_object_id(name=name, object_id=object_id)
+        obj.active_adaptation_value_id = data.id
+        return await self.zif_objects_repo.save(obj)
+
+
+    async def set_validation_data(self, object_id: int, is_user_value: bool,
+                                  wct: float, gas_condensate_factor: float) -> VRAdaptationData:
+        return await self.validation_repo.save(object_id, is_user_value,
+                                                wct, gas_condensate_factor)
 
 
     async def save_validation_data(self, data: VRValidationData) -> VRValidationData:
@@ -72,7 +85,7 @@ class VRStorageService:
         return await self.adaptation_repo.find_by_name_and_object_id(name, object_id)
 
 
-    async def find_validation_data_by_object_id(self, object_id: str) -> VRValidationData:
+    async def find_validation_data_by_object_id(self, object_id: int) -> VRValidationData:
         return await self.validation_repo.find_by_uid(object_id)
 
 

@@ -8,15 +8,17 @@ from dependencies.db_models import VRZifAdditionalObjects
 
 class VRZifAdditionalObjectsRepository:
 
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
-    @staticmethod
+
     async def find_by_name_and_main_object(
+            self,
             object_uid: str,
             object_name: str,
-            session: AsyncSession = Depends(get_db)
     ) -> VRZifAdditionalObjects:
 
-        result = await session.execute(
+        result = await self.session.execute(
             select(VRZifAdditionalObjects).where(
                 VRZifAdditionalObjects.zif_uid == object_uid,
                 VRZifAdditionalObjects.name == object_name

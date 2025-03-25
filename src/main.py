@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 import uvicorn
+from dependency_injector.wiring import Provide
 from fastapi import FastAPI
 
 from containers.config_container import ConfigContainer
@@ -8,12 +9,13 @@ from routers.additional_router import additional_router
 from routers.ml_router import ml_router
 from routers.pmm_routers import adapt_router, fmm_router
 from dependencies.database import session_manager
+from config import TSDBAPIConfig
 
 
 @asynccontextmanager
 async def lifespan(_application: FastAPI) -> AsyncGenerator:
     config_container = ConfigContainer()
-    config_container.wire(packages=[__name__, 'dependencies', 'services'])
+    config_container.wire(packages=[__name__, 'dependencies', 'services', 'routers'])
 
     session_manager.init_db()
     yield
@@ -33,8 +35,14 @@ async def healthcheck():
     return {"status": "ok"}
 
 
+@app.get("/config")
+async def show_config(
+    tsdb_config: TSDBAPIConfig = Provide[ConfigContainer.tsdb_config]
+):
+    return tsdb_config
+
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8001)
 
 
