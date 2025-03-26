@@ -39,13 +39,12 @@ class VRZifObjectsRepository:
         return obj
 
 
-    @staticmethod
     async def find_by_id(
+            self,
             _id: int,
-            session: AsyncSession = Depends(get_db)
     ) -> VRZifObjects:
 
-        result = await session.execute(
+        result = await self.session.execute(
             select(VRZifObjects).where(
                 VRZifObjects.id == _id
             )
@@ -56,12 +55,11 @@ class VRZifObjectsRepository:
         return obj
 
 
-    @staticmethod
     async def find_all_active(
-            session: AsyncSession = Depends(get_db)
+            self
     ) -> Sequence[VRZifObjects]:
 
-        result = await session.execute(
+        result = await self.session.execute(
             select(VRZifObjects).where(
                 VRZifObjects.active_adaptation_value_id.is_not(None)
             )
@@ -69,10 +67,9 @@ class VRZifObjectsRepository:
         return result.scalars().all()
 
 
-    @staticmethod
     async def find_all(
-            session: AsyncSession = Depends(get_db)
+            self
     ) -> Sequence[VRZifObjects]:
 
-        result = await session.execute(select(VRZifObjects))
+        result = await self.session.execute(select(VRZifObjects))
         return result.scalars().all()

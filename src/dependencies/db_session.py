@@ -1,7 +1,6 @@
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from containers.config_container import ConfigContainer
 from dependencies.database import session_manager
 
 

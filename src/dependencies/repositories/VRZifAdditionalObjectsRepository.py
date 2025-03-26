@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies.db_session import get_db
 from dependencies.db_models import VRZifAdditionalObjects
+from typing_extensions import Sequence
 
 
 class VRZifAdditionalObjectsRepository:
@@ -14,13 +15,11 @@ class VRZifAdditionalObjectsRepository:
 
     async def find_by_name_and_main_object(
             self,
-            object_uid: str,
             object_name: str,
     ) -> VRZifAdditionalObjects:
 
         result = await self.session.execute(
             select(VRZifAdditionalObjects).where(
-                VRZifAdditionalObjects.zif_uid == object_uid,
                 VRZifAdditionalObjects.name == object_name
             )
         )
@@ -28,3 +27,11 @@ class VRZifAdditionalObjectsRepository:
         if not obj:
             raise HTTPException(status_code=404, detail="Object not found")
         return obj
+
+    async def find_all(self) -> Sequence[VRZifAdditionalObjects]:
+
+        result = await self.session.execute(
+            select(VRZifAdditionalObjects)
+        )
+        return result.scalars().all()
+

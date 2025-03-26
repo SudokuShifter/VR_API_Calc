@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from dependency_injector.wiring import inject, Provide
 
 from dependencies.db_session import get_db
-from containers.config_container import ConfigContainer
 from services.vr_storage_service import VRStorageService
 from services.external_api_service import PMMAPIService, MLAPIService, VRAPICore
 from config import TSDBAPIConfig, PMMAPIConfig, MLAPIConfig

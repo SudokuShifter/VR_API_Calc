@@ -20,13 +20,32 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class VRStorageService:
+
+    WELL_IDS = [529, 508, 504, 524, 554, 521, 522, 528, 503, 517, 506,
+                552, 501, 511, 507, 505, 502, 513, 516, 510, 525, 2]
+    OTHER_IDS = ['ТЛ1 Сепаратор', 'ТЛ1 Манифольд', 'Train2',
+                 'ТЛ2 Сепаратор', 'ТЛ2 Манифольд', 'ОБТК', 'СПГ']
+
     def __init__(self, session: AsyncSession):
         self.zif_objects_repo = VRZifObjectsRepository(session)
         self.adaptation_repo = VRAdaptationDataRepository(session)
         self.validation_repo = VRValidationDataRepository(session)
         self.additional_objects_repo = VRZifAdditionalObjectsRepository(session)
         self.type_repo = VRTypeRepository(session)
+        self.session = session
 
+    async def init_db_script(self):
+        main_objs = await self.get_all_main_objects()
+        print(main_objs)
+        if not main_objs:
+            for i in self.WELL_IDS:
+                self.session.add(VRZifObjects(name=f'well_{i}', hole_project_id=i))
+
+        if not await self.get_all_addi():
+            for i in self.OTHER_IDS:
+                self.session.add(VRZifAdditionalObjects(name=i))
+
+        await self.session.commit()
 
     async def save_adaptation_data(self, data: VRAdaptationData) -> VRAdaptationData:
         return await self.adaptation_repo.save(data)
@@ -60,6 +79,8 @@ class VRStorageService:
     async def get_all_main_objects(self) -> Sequence[VRZifObjects]:
         return await self.zif_objects_repo.find_all()
 
+    async def get_all_addi(self) -> Sequence[VRZifAdditionalObjects]:
+        return await self.additional_objects_repo.find_all()
 
     async def get_object_by_uid(self, zif_uid: str) -> VRZifObjects:
         return await self.zif_objects_repo.find_by_uid(zif_uid)

@@ -5,6 +5,9 @@ from fastapi import (
     Query
 )
 
+from src.schemas.VRZifObjects import VRZifObjectsPyd
+from src.schemas.VRValidationData import VRValidationDataPyd
+from src.schemas.VRAdaptationData import VRAdaptationDataPyd
 from services.dependencies import (
     PMMServiceDep,
     VRCoreDep,
@@ -20,32 +23,33 @@ adapt_router = APIRouter()
 
 @adapt_router.get('/api/v1/validate',
                   status_code=status.HTTP_200_OK,
-                  summary='Получить данные для валидации за метку времени'
+                  summary='Выполнить расчет данных для валидации за метку времени'
                   )
 async def get_task_validate_value(
         vr_core: VRCoreDep,
+        vr_storage: VRStorageDep,
         pmm_service: PMMServiceDep,
-        date_start: datetime = Query(..., description="2021-01-01T00:00:00Z"),
-        date_end: datetime = Query(..., description="2021-01-01T00:00:00Z"),
+        time_left: datetime = Query(..., description="2021-01-01T00:00:00Z"),
+        time_right: datetime = Query(..., description="2021-01-01T00:00:00Z"),
         well_id: str = Query(..., description='ID модели'),
 ):
     """
     Выполняет расчет данных для валидации на основе переданных параметров.
     """
-    date_start = date_start.strftime('%Y-%m-%dT%H:%M:%SZ')
-    date_end = date_end.strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_left = time_left.strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_right = time_right.strftime('%Y-%m-%dT%H:%M:%SZ')
     data = await vr_core.get_data_for_validate_by_range(
-        date_start=date_start,
-        date_end=date_end,
+        time_left=time_left,
+        time_right=time_right,
         well_id=well_id
     )
+    vr_storage.set_validation_data(VRValidationDataPyd(**data))
+    # Сделать сохранение данных валидации
     return await pmm_service.execute_validate_task(data=data)
-
 
 
 @adapt_router.get('/api/v1/validate/get')
 async def get_validate_data(
-        vr_core: VRCoreDep,
         vr_storage: VRStorageDep,
         object_id: int = Query(..., description='Object ID'),
 ):
@@ -70,18 +74,25 @@ async def put_validate_data(
                                                 wct=wct, gas_condensate_factor=gas_condensate_factor)
 
 
-@adapt_router.get('/api/v1/adaptation')
+@adapt_router.get('/api/v1/adaptation',
+                  status_code=status.HTTP_200_OK,
+                  summary='Выполнить задачу адаптации')
 async def get_adaptation_value(
+        vr_core: VRCoreDep,
         adapt_validate_service: PMMServiceDep,
-        object_id: int = Query(..., description='Object ID'),
-        time_left: str = Query(..., description='Time left'),
-        time_right: str = Query(..., description='Time right'),
+        well_id: int = Query(..., description='Object ID'),
+        time_left: datetime = Query(..., description="2021-01-01T00:00:00Z"),
+        time_right: datetime = Query(..., description="2021-01-01T00:00:00Z"),
         name: str = Query(..., description='Имя адаптации')
 ):
     """
     Считает данные адаптации без их активации
     """
-    pass
+    time_left = time_left.strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_right = time_right.strftime('%Y-%m-%dT%H:%M:%SZ')
+    data = await vr_core.get_data_for_adapt_by_range(time_left=time_left, time_right=time_right, well_id=well_id)
+    # Сделать сохранение данных адаптации
+    return await adapt_validate_service.execute_adapt_task(data=data)
 
 
 @adapt_router.get('/api/v1/adaptation/all')

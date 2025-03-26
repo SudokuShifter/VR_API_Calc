@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import (
 from asyncio import current_task
 import loguru
 
-from containers.config_container import ConfigContainer
 from config import PSQLConfig, load_psql_config
 
 

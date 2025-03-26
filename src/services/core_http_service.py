@@ -15,14 +15,16 @@ class BaseHTTPService(ABC):
     ) -> tuple[Any, int]:
 
         if headers is None:
-            headers = {"Content-Type": "application/json"}
+            headers = {
+                "Content-Type": "application/json",
+                "accept": "application/json"
+            }
 
         if method.upper() in ("GET", "HEAD") and body is not None:
             raise ValueError(f"Метод {method} не может содержать тело запроса")
 
         if url_params and method.upper() == "GET":
             url = f"{url}?{urlencode(url_params)}"
-
         async with ClientSession() as session:
             if method.upper() == "GET":
                 response = await session.get(url, headers=headers)

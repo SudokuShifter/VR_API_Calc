@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -29,14 +31,11 @@ class VRZifObjects(Base):
     hole_project_id = Column(
         Integer, nullable=False
     )
-    zif_uid = Column(
-        String(255), nullable=False
-    )
     active_adaptation_value_id = Column(
-        BigInteger, nullable=False, default=0
+        BigInteger, default=0
     )
     creation_date = Column(
-        DateTime, nullable=False
+        DateTime, nullable=False, default=datetime.utcnow
     )
     active_vr_type = Column(
         String(255), ForeignKey('vr_scheme.vr_type.id')
@@ -107,11 +106,8 @@ class VRZifAdditionalObjects(Base):
     name = Column(
         String(255)
     )
-    zif_uid = Column(
-        String(255), nullable=False
-    )
     creation_date = Column(
-        DateTime, nullable=False
+        DateTime, nullable=False, default=datetime.utcnow
     )
 
 

@@ -6,7 +6,6 @@ class VRZifObjectsBase(BaseModel):
     id: int
     name: Optional[str] = None
     hole_project_id: int
-    zif_uid: str
     active_adaptation_value_id: int = 0
     creation_date: datetime
     active_vr_type: Optional[str] = None
