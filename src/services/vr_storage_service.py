@@ -1,4 +1,7 @@
-from typing import Sequence, Annotated
+from datetime import datetime
+from typing import Sequence, Annotated, List
+
+from loguru import logger
 
 from dependencies.repositories.VRZifObjectsRepository import VRZifObjectsRepository
 from dependencies.repositories.VRAdaptationDataRepository import VRAdaptationDataRepository
@@ -36,26 +39,42 @@ class VRStorageService:
 
     async def init_db_script(self):
         main_objs = await self.get_all_main_objects()
-        print(main_objs)
+
         if not main_objs:
             for i in self.WELL_IDS:
                 self.session.add(VRZifObjects(name=f'well_{i}', hole_project_id=i))
-
+                logger.success(f'Well obj {i} added in DB')
         if not await self.get_all_addi():
             for i in self.OTHER_IDS:
                 self.session.add(VRZifAdditionalObjects(name=i))
-
+                logger.success(f'Additional obj {i} added in DB')
         await self.session.commit()
 
-    async def save_adaptation_data(self, data: VRAdaptationData) -> VRAdaptationData:
-        return await self.adaptation_repo.save(data)
+
+    async def save_adaptation_data(
+            self,
+            object_id: int,
+            name: str,
+            choke_value_adapt: List[float],
+            choke_percent_adapt: List[float],
+            date_start: datetime,
+            date_end: datetime
+    ) -> VRAdaptationData:
+
+        return await self.adaptation_repo.save(
+            object_id=object_id, name=name,
+            choke_value_adapt=choke_value_adapt,
+            choke_percent_adapt=choke_percent_adapt,
+            date_start=date_start, date_end=date_end
+        )
 
 
-    async def set_adaptation_data(self, object_id: int, name: str) -> VRAdaptationData:
-        obj = self.get_object_by_id(_id=object_id)
-        data = self.find_adaptation_data_by_name_and_object_id(name=name, object_id=object_id)
-        obj.active_adaptation_value_id = data.id
-        return await self.zif_objects_repo.save(obj)
+    async def set_adaptation_data(self, well_id: str, name: str) -> VRAdaptationData:
+        adapt_id = await self.adaptation_repo.find_adapt_by_name(name)
+        return await self.zif_objects_repo.set_adaptation_data(
+            well_id=well_id,
+            adaptation_id=adapt_id.id
+        )
 
 
     async def set_validation_data(self, object_id: int, is_user_value: bool,
@@ -64,8 +83,10 @@ class VRStorageService:
                                                 wct, gas_condensate_factor)
 
 
-    async def save_validation_data(self, data: VRValidationData) -> VRValidationData:
-        return await self.validation_repo.save(data)
+    async def save_validation_data(self, object_id: int, is_user_value: bool,
+                                  wct: float, gas_condensate_factor: float) -> VRValidationData:
+        return await self.validation_repo.save(object_id, is_user_value,
+                                  wct, gas_condensate_factor)
 
 
     async def save_main_object(self, obj: VRZifObjects) -> VRZifObjects:
@@ -82,8 +103,8 @@ class VRStorageService:
     async def get_all_addi(self) -> Sequence[VRZifAdditionalObjects]:
         return await self.additional_objects_repo.find_all()
 
-    async def get_object_by_uid(self, zif_uid: str) -> VRZifObjects:
-        return await self.zif_objects_repo.find_by_uid(zif_uid)
+    async def get_object_by_name(self, name: str) -> VRZifObjects:
+        return await self.zif_objects_repo.find_by_name(name)
 
 
     async def get_object_by_id(self, _id: int) -> VRZifObjects:

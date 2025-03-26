@@ -5,9 +5,7 @@ from fastapi import (
     Query
 )
 
-from src.schemas.VRZifObjects import VRZifObjectsPyd
-from src.schemas.VRValidationData import VRValidationDataPyd
-from src.schemas.VRAdaptationData import VRAdaptationDataPyd
+
 from services.dependencies import (
     PMMServiceDep,
     VRCoreDep,
@@ -43,9 +41,16 @@ async def get_task_validate_value(
         time_right=time_right,
         well_id=well_id
     )
-    vr_storage.set_validation_data(VRValidationDataPyd(**data))
-    # Сделать сохранение данных валидации
-    return await pmm_service.execute_validate_task(data=data)
+    vr_obj = await vr_storage.get_object_by_name(name=f'well_{well_id}')
+    validate_data = await pmm_service.execute_validate_task(data=data)
+    data_for_save = validate_data.get('solution')
+    if validate_data:
+        await vr_storage.save_validation_data(
+            object_id=vr_obj.id, wct=data_for_save['wct'],
+            gas_condensate_factor=data_for_save['gas_condensate_factor'],
+            is_user_value=False
+        )
+    return validate_data
 
 
 @adapt_router.get('/api/v1/validate/get')
@@ -79,20 +84,29 @@ async def put_validate_data(
                   summary='Выполнить задачу адаптации')
 async def get_adaptation_value(
         vr_core: VRCoreDep,
+        vr_storage: VRStorageDep,
         adapt_validate_service: PMMServiceDep,
         well_id: int = Query(..., description='Object ID'),
-        time_left: datetime = Query(..., description="2021-01-01T00:00:00Z"),
-        time_right: datetime = Query(..., description="2021-01-01T00:00:00Z"),
+        date_start: datetime = Query(..., description="2021-01-01T00:00:00Z"),
+        date_end: datetime = Query(..., description="2021-01-01T00:00:00Z"),
         name: str = Query(..., description='Имя адаптации')
 ):
     """
     Считает данные адаптации без их активации
     """
-    time_left = time_left.strftime('%Y-%m-%dT%H:%M:%SZ')
-    time_right = time_right.strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_left = date_start.strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_right = date_end.strftime('%Y-%m-%dT%H:%M:%SZ')
+    vr_obj = await vr_storage.get_object_by_name(name=f'well_{well_id}')
     data = await vr_core.get_data_for_adapt_by_range(time_left=time_left, time_right=time_right, well_id=well_id)
-    # Сделать сохранение данных адаптации
-    return await adapt_validate_service.execute_adapt_task(data=data)
+    adapt_data = await adapt_validate_service.execute_adapt_task(data=data)
+    adapt_data_for_save = adapt_data.get('solution')
+    await vr_storage.save_adaptation_data(object_id=vr_obj.id, name=name,
+                                          choke_value_adapt=adapt_data_for_save['c_choke_adapt'],
+                                          choke_percent_adapt=adapt_data_for_save['d_choke_percent_adapt'],
+                                          date_start=date_start.replace(tzinfo=None),
+                                          date_end=date_end.replace(tzinfo=None)
+                                          )
+    return adapt_data
 
 
 @adapt_router.get('/api/v1/adaptation/all')
@@ -120,10 +134,10 @@ async def get_active_adaptation_data(
 @adapt_router.put('/api/v1/adaptation/set')
 async def set_active_adaptation_value(
         vr_storage: VRStorageDep,
-        object_id: int = Query(..., description='Object ID'),
+        well_id: str = Query(..., description='Object ID'),
         name: str = Query(..., description='Имя адаптации')
 ):
-    return await vr_storage.set_adaptation_data(object_id, name)
+    return await vr_storage.set_adaptation_data(well_id, name)
 
 
 ############################# FMM-routers

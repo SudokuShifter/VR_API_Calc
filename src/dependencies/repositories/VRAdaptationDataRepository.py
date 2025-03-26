@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Sequence
 
 from fastapi import HTTPException, Depends
@@ -6,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies.db_session import get_db
 from dependencies.db_models import VRAdaptationData, VRZifObjects
-from schemas.VRAdaptationData import VRAdaptationDataPyd
+
 
 
 class VRAdaptationDataRepository:
@@ -16,29 +17,40 @@ class VRAdaptationDataRepository:
 
     async def save(
             self,
-            data: VRAdaptationDataPyd,
+            object_id: int,
+            name: str,
+            choke_value_adapt: float,
+            choke_percent_adapt: float,
+            date_start: datetime,
+            date_end: datetime,
     ):
-
-        self.session.add(data)
+        obj = VRAdaptationData(
+            vr_zif_objects_id=object_id,
+            name=name,
+            choke_value_adapt=choke_value_adapt,
+            choke_percent_adapt=choke_percent_adapt,
+            date_start=date_start,
+            date_end=date_end,
+            creation_date=datetime.now(),
+        )
+        self.session.add(obj)
         await self.session.commit()
-        return VRAdaptationDataPyd(**data)
+        return obj
 
 
-    async def find_by_name_and_object_id(
+    async def find_adapt_by_name(
             self,
             name: str,
-            object_id: int,
     ) -> VRAdaptationData:
 
         result = await self.session.execute(
             select(VRAdaptationData).where(
                 VRAdaptationData.name == name,
-                VRAdaptationData.vr_zif_objects_id == object_id
             )
         )
         data = result.scalars().first()
         if not data:
-            raise HTTPException(status_code=404, detail=f"VRAdaptationDataRepository.find_by_name_and_object_id failed")
+            raise HTTPException(status_code=404, detail=f"VRAdaptationDataRepository.find_by_name failed")
         return data
 
 

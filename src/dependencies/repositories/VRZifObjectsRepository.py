@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies.db_session import get_db
-from dependencies.db_models import VRZifObjects
+from dependencies.db_models import VRZifObjects, VRAdaptationData
 
 
 class VRZifObjectsRepository:
@@ -23,14 +23,14 @@ class VRZifObjectsRepository:
         return obj
 
 
-    async def find_by_uid(
+    async def find_by_name(
             self,
-            zif_uid: str
+            name: str
     ) -> VRZifObjects:
 
         result = await self.session.execute(
             select(VRZifObjects).where(
-                VRZifObjects.zif_uid == zif_uid
+                VRZifObjects.name == name
             )
         )
         obj = result.scalars().first()
@@ -73,3 +73,15 @@ class VRZifObjectsRepository:
 
         result = await self.session.execute(select(VRZifObjects))
         return result.scalars().all()
+
+
+    async def set_adaptation_data(
+            self,
+            well_id: str,
+            adaptation_id: int
+    ) -> VRAdaptationData:
+
+        vr_obj = await self.find_by_name(f'well_{well_id}')
+        vr_obj.active_adaptation_value_id = adaptation_id
+        await self.session.commit()
+        return vr_obj
