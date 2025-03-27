@@ -40,14 +40,17 @@ class MLAPIService(BaseHTTPService):
     def __init__(self):
         self.url_addr = f'http://127.0.0.1:8005'
 
+    async def execute_ml_task(self, data):
+        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["ml"]}', body=data, method='POST')
 
 
 class VRAPICore(BaseHTTPService):
     URLS = {
-        'ml_predict': 'api/predict',
         'adapt': 'api/get_data_for_adapt_by_range',
         'validate': 'api/get_data_for_validate_by_range',
-        'fmm_time_point': 'api/get_data_for_fmm_by_time_point'
+        'fmm_time_point': 'api/get_data_for_fmm_by_time_point',
+        'ml_time_point': 'api/get_data_for_ml_by_time_point',
+        'ml_range': 'api/get_data_for_ml_by_range'
     }
 
     def __init__(self):
@@ -78,11 +81,30 @@ class VRAPICore(BaseHTTPService):
 
     async def get_data_for_adapt_by_time_point(
             self,
-            time:
-            datetime.datetime,
+            time: datetime.datetime,
             well_id: str
     ):
         params = {'date_start': time, 'well_id': well_id}
         return await self.execute_request(url=f'{self.url_addr}/{self.URLS["fmm_time_point"]}',
                                           url_params=params, method='GET')
 
+
+    async def get_data_for_ml_by_time_point(
+            self,
+            time: datetime.datetime,
+            well_id: str
+    ):
+        params = {'date_start': time, 'well_id': well_id}
+        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["ml_time_point"]}',
+                                          url_params=params, method='GET')
+
+
+    async def get_data_for_ml_by_range(
+            self,
+            time_left: datetime.datetime,
+            time_right: datetime.datetime,
+            well_id: str
+    ):
+        params = {'date_start': time_left, 'date_end': time_right, 'well_id': well_id}
+        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["ml_range"]}',
+                                          url_params=params, method='GET')

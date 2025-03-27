@@ -27,15 +27,15 @@ async def get_task_validate_value(
         vr_core: VRCoreDep,
         vr_storage: VRStorageDep,
         pmm_service: PMMServiceDep,
-        time_left: datetime = Query(..., description="2021-01-01T00:00:00Z"),
-        time_right: datetime = Query(..., description="2021-01-01T00:00:00Z"),
+        date_start: datetime = Query(..., description="2021-01-01T00:00:00Z"),
+        date_end: datetime = Query(..., description="2021-01-01T00:00:00Z"),
         well_id: str = Query(..., description='ID модели'),
 ):
     """
     Выполняет расчет данных для валидации на основе переданных параметров.
     """
-    time_left = time_left.strftime('%Y-%m-%dT%H:%M:%SZ')
-    time_right = time_right.strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_left = date_start.strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_right = date_end.strftime('%Y-%m-%dT%H:%M:%SZ')
     data = await vr_core.get_data_for_validate_by_range(
         time_left=time_left,
         time_right=time_right,
