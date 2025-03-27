@@ -21,7 +21,7 @@ adapt_router = APIRouter()
 
 @adapt_router.get('/api/v1/validate',
                   status_code=status.HTTP_200_OK,
-                  summary='Выполнить расчет данных для валидации за метку времени'
+                  summary='Выполнить расчет данных для валидации за диапазон времени'
                   )
 async def get_task_validate_value(
         vr_core: VRCoreDep,
@@ -148,15 +148,26 @@ fmm_router = APIRouter()
 
 @fmm_router.get('/api/v1/fmm')
 async def execute_fmm_task(
-        adapt_validate_service: PMMServiceDep,
-        object_id: int = Query(..., description='Object ID'),
-        time: str = Query(..., description='Момент времени, для которого выполняется задача')
+        pmm_service: PMMServiceDep,
+        vr_storage: VRStorageDep,
+        vr_core: VRCoreDep,
+        well_id: str = Query(..., description='Object ID'),
+        time: datetime = Query(..., description='Момент времени, 2021-01-01T00:00:00Z')
 ):
     """
     Выполняет задачу FMM
     для указанного объекта в определенный момент времени.
     """
-    pass
+    time = time.strftime('%Y-%m-%dT%H:%M:%SZ')
+    adapt_data = await vr_storage.find_active_adaptation_data_by_object_name(name=f'well_{well_id}')
+    main_obj = await vr_storage.get_object_by_name(name=f'well_{well_id}')
+    validate_data = await vr_storage.find_validation_data_by_object_id(object_id=main_obj.id)
+    data = await vr_core.get_data_for_adapt_by_time_point(time=time, well_id=well_id)
+    data['d_choke_percent_adapt'] = adapt_data.choke_percent_adapt
+    data['c_choke_adapt'] = adapt_data.choke_value_adapt
+    data['gas_condensate_factor'] = validate_data.gas_condensate_factor
+    data['wct'] = validate_data.wct
+    return await pmm_service.execute_fmm_task(data=data)
 
 
 @fmm_router.get('/api/v1/fmm/duration')

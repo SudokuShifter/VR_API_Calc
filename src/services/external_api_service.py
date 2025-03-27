@@ -1,4 +1,5 @@
 import datetime
+from importlib.metadata import always_iterable
 from typing import Optional, Dict, Any
 
 from dependency_injector.wiring import Provide
@@ -46,7 +47,7 @@ class VRAPICore(BaseHTTPService):
         'ml_predict': 'api/predict',
         'adapt': 'api/get_data_for_adapt_by_range',
         'validate': 'api/get_data_for_validate_by_range',
-        'fmm': 'api/fmm'
+        'fmm_time_point': 'api/get_data_for_fmm_by_time_point'
     }
 
     def __init__(self):
@@ -60,7 +61,8 @@ class VRAPICore(BaseHTTPService):
             well_id: str
     ):
         params = {'date_start': time_left, 'date_end': time_right, 'well_id': well_id}
-        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["validate"]}', url_params=params, method='GET')
+        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["validate"]}',
+                                          url_params=params, method='GET')
 
 
     async def get_data_for_adapt_by_range(
@@ -70,4 +72,17 @@ class VRAPICore(BaseHTTPService):
             well_id: str
     ):
         params = {'date_start': time_left, 'date_end': time_right, 'well_id': well_id}
-        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["adapt"]}', url_params=params, method='GET')
+        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["adapt"]}',
+                                          url_params=params, method='GET')
+
+
+    async def get_data_for_adapt_by_time_point(
+            self,
+            time:
+            datetime.datetime,
+            well_id: str
+    ):
+        params = {'date_start': time, 'well_id': well_id}
+        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["fmm_time_point"]}',
+                                          url_params=params, method='GET')
+

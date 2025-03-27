@@ -67,16 +67,16 @@ class VRAdaptationDataRepository:
         return result.scalars().all()
 
 
-    async def find_active_by_object_id(
+    async def find_active_by_object_name(
             self,
-            object_uid: str,
+            name: str,
     ) -> VRAdaptationData:
 
         result = await self.session.execute(
             select(VRAdaptationData)
             .join(VRZifObjects, VRAdaptationData.vr_zif_objects_id == VRZifObjects.id)
             .where(
-                VRZifObjects.zif_uid == object_uid,
+                VRZifObjects.name == name,
                 VRAdaptationData.id == VRZifObjects.active_adaptation_value_id
             )
             .limit(1)

@@ -29,11 +29,11 @@ class VRValidationDataRepository:
         return obj
 
 
-    async def find_by_uid(
+    async def find_by_obj_id(
             self,
             object_id: int
     ) -> VRValidationData:
-        print(self.session)
+
         result = await self.session.execute(
             select(VRValidationData).where(
                 VRValidationData.vr_zif_objects_id == object_id

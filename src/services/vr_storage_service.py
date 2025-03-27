@@ -79,14 +79,21 @@ class VRStorageService:
 
     async def set_validation_data(self, object_id: int, is_user_value: bool,
                                   wct: float, gas_condensate_factor: float) -> VRAdaptationData:
-        return await self.validation_repo.save(object_id, is_user_value,
-                                                wct, gas_condensate_factor)
+        return await self.validation_repo.save(
+            object_id=object_id,
+            is_user_value=is_user_value,
+            wct=wct, gas_condensate_factor=gas_condensate_factor
+        )
 
 
     async def save_validation_data(self, object_id: int, is_user_value: bool,
                                   wct: float, gas_condensate_factor: float) -> VRValidationData:
-        return await self.validation_repo.save(object_id, is_user_value,
-                                  wct, gas_condensate_factor)
+        return await self.validation_repo.save(
+            object_id=object_id,
+            is_user_value=is_user_value,
+            wct=wct,
+            gas_condensate_factor=gas_condensate_factor
+        )
 
 
     async def save_main_object(self, obj: VRZifObjects) -> VRZifObjects:
@@ -119,8 +126,8 @@ class VRStorageService:
         return await self.adaptation_repo.find_all_by_object_id(object_id)
 
 
-    async def find_active_adaptation_data_by_object_id(self, object_id: int) -> VRAdaptationData:
-        return await self.adaptation_repo.find_active_by_object_id(object_id)
+    async def find_active_adaptation_data_by_object_name(self, name: int) -> VRAdaptationData:
+        return await self.adaptation_repo.find_active_by_object_name(name)
 
 
     async def find_adaptation_data_by_name_and_object_id(self, name: str, object_id: int) -> VRAdaptationData:
@@ -128,7 +135,7 @@ class VRStorageService:
 
 
     async def find_validation_data_by_object_id(self, object_id: int) -> VRValidationData:
-        return await self.validation_repo.find_by_uid(object_id)
+        return await self.validation_repo.find_by_obj_id(object_id)
 
 
     async def find_all_vr_types(self) -> Sequence[VRType]:
@@ -137,7 +144,4 @@ class VRStorageService:
 
     async def find_vr_type_by_uid(self, uid: str) -> VRType:
         return await self.type_repo.find_by_uid(uid)
-
-
-
 
