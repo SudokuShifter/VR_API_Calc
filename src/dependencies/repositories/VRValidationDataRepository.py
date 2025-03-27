@@ -41,7 +41,7 @@ class VRValidationDataRepository:
         )
         data = result.scalars().first()
         if not data:
-            raise HTTPException(status_code=404, detail="VR ZIF Object not found")
+            raise HTTPException(status_code=404, detail="Adaptation object not found")
         return data
 
 

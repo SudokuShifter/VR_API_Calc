@@ -86,7 +86,7 @@ async def get_adaptation_value(
         vr_core: VRCoreDep,
         vr_storage: VRStorageDep,
         adapt_validate_service: PMMServiceDep,
-        well_id: int = Query(..., description='Object ID'),
+        well_id: int = Query(..., description='Well ID'),
         date_start: datetime = Query(..., description="2021-01-01T00:00:00Z"),
         date_end: datetime = Query(..., description="2021-01-01T00:00:00Z"),
         name: str = Query(..., description='Имя адаптации')
@@ -151,7 +151,7 @@ async def execute_fmm_task(
         pmm_service: PMMServiceDep,
         vr_storage: VRStorageDep,
         vr_core: VRCoreDep,
-        well_id: str = Query(..., description='Object ID'),
+        well_id: int = Query(..., description='Well ID'),
         time: datetime = Query(..., description='Момент времени, 2021-01-01T00:00:00Z')
 ):
     """
@@ -167,6 +167,7 @@ async def execute_fmm_task(
     data['c_choke_adapt'] = adapt_data.choke_value_adapt
     data['gas_condensate_factor'] = validate_data.gas_condensate_factor
     data['wct'] = validate_data.wct
+    # Нихера не доделано (Завтра спросить Алексея)
     return await pmm_service.execute_fmm_task(data=data)
 
 
