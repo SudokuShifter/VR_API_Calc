@@ -44,6 +44,7 @@ async def get_task_validate_value(
     vr_obj = await vr_storage.get_object_by_name(name=f'well_{well_id}')
     validate_data = await pmm_service.execute_validate_task(data=data)
     data_for_save = validate_data.get('solution')
+    return validate_data
     if validate_data:
         await vr_storage.save_validation_data(
             object_id=vr_obj.id, wct=data_for_save['wct'],
@@ -98,6 +99,7 @@ async def get_adaptation_value(
     time_right = date_end.strftime('%Y-%m-%dT%H:%M:%SZ')
     vr_obj = await vr_storage.get_object_by_name(name=f'well_{well_id}')
     data = await vr_core.get_data_for_adapt_by_range(time_left=time_left, time_right=time_right, well_id=well_id)
+    return data
     adapt_data = await adapt_validate_service.execute_adapt_task(data=data)
     adapt_data_for_save = adapt_data.get('solution')
     await vr_storage.save_adaptation_data(object_id=vr_obj.id, name=name,

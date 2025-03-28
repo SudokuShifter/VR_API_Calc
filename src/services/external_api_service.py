@@ -41,7 +41,7 @@ class MLAPIService(BaseHTTPService):
         self.url_addr = f'http://127.0.0.1:8005'
 
     async def execute_ml_task(self, data):
-        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["ml"]}', body=data, method='POST')
+        return await self.execute_request(url=f'{self.url_addr}/{self.URLS["ml_predict"]}', body=data, method='POST')
 
 
 class VRAPICore(BaseHTTPService):
